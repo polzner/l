@@ -1,6 +1,6 @@
 ﻿namespace Syntax
 {
-     public enum State 
+     public enum LexicState 
      {
          Start,
          Number,

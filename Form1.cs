@@ -18,11 +18,10 @@ namespace Syntax
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
+        { 
             textBox2.Clear();
             Lexic lexic = new Lexic(new IdGenerator());
             lexic.Analysis(textBox1.Text);
-
             StringBuilder result = new StringBuilder();
 
             foreach (var lex in lexic.Lexemes)
@@ -31,6 +30,9 @@ namespace Syntax
             }
 
             textBox2.Text = result.ToString();
+
+            ResultBuilder resultBuilder = new ResultBuilder();
+            resultBuilder.Generate(richTextBox1, lexic.Lexemes.ToList());
         }
     }
 }

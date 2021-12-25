@@ -18,7 +18,7 @@ namespace Syntax
         private string _wordBufer;
         private StringReader _stringReader;
         private char[] _currentSymbol = new char[1];
-        private State _state;
+        private LexicState _state;
         private IdGenerator _id;
 
         public Lexic(IdGenerator id)
@@ -32,13 +32,13 @@ namespace Syntax
         {
             _stringReader = new StringReader(text + '.');
 
-            while(_state != State.Final)
+            while(_state != LexicState.Final)
             {
                 char currentSymbol = _currentSymbol[0];
-
+                
                 switch (_state)
                 {
-                    case State.Start:
+                    case LexicState.Start:
                         if (currentSymbol == ' ' || currentSymbol == '\n'
                             || currentSymbol == '\t' || currentSymbol == '\0' || currentSymbol == '\r')
                         {
@@ -49,33 +49,33 @@ namespace Syntax
                             ClearBufer();
                             AddInBufer(currentSymbol);
                             SetNextSymbol();
-                            _state = State.Word;
+                            _state = LexicState.Word;
                         }
                         else if (char.IsDigit(currentSymbol))
                         {
                             ClearBufer();
                             AddInBufer(currentSymbol);
                             SetNextSymbol();
-                            _state = State.Number;
+                            _state = LexicState.Number;
                         }
                         else if (currentSymbol == ':')
                         {
                             ClearBufer();
                             AddInBufer(currentSymbol);
                             SetNextSymbol();
-                            _state = State.Assign;
+                            _state = LexicState.Assign;
                         }
                         else if (currentSymbol == '.')
                         {
-                            _state = State.Final;
+                            _state = LexicState.Final;
                         }
                         else
                         {
-                            _state = State.Delimiter;
+                            _state = LexicState.Delimiter;
                         }
                         break;
 
-                    case State.Number:
+                    case LexicState.Number:
                         if (char.IsDigit(currentSymbol))
                         {
                             AddInBufer(currentSymbol);
@@ -85,11 +85,11 @@ namespace Syntax
                         {
                             AddLex(LexType.Number, _wordBufer);
                             ClearBufer();
-                            _state = State.Start;
+                            _state = LexicState.Start;
                         }
                         break;
 
-                    case State.Delimiter:
+                    case LexicState.Delimiter:
                         ClearBufer();
                         AddInBufer(currentSymbol);
 
@@ -97,15 +97,15 @@ namespace Syntax
                         {
                             AddLex(LexType.Delimeter, _wordBufer);
                             SetNextSymbol();
-                            _state = State.Start;
+                            _state = LexicState.Start;
                         }
                         else
                         {
-                            _state = State.Error;
+                            _state = LexicState.Error;
                         }
                         break;
 
-                    case State.Word:
+                    case LexicState.Word:
                         if (char.IsLetterOrDigit(currentSymbol))
                         {
                             AddInBufer(currentSymbol);
@@ -121,11 +121,11 @@ namespace Syntax
                             {
                                 AddLex(LexType.Identifier, _wordBufer);
                             }
-                            _state = State.Start;
+                            _state = LexicState.Start;
                         }
                         break;                    
 
-                    case State.Assign:
+                    case LexicState.Assign:
                         if (currentSymbol == '=')
                         {
                             AddInBufer(currentSymbol);
@@ -137,12 +137,12 @@ namespace Syntax
                         {
                             AddLex(LexType.Delimeter, _wordBufer);
                         }
-                        _state = State.Start;
+                        _state = LexicState.Start;
                         break;
 
-                    case State.Error:
+                    case LexicState.Error:
                         MessageBox.Show("Ошибка в программе");
-                        _state = State.Final;
+                        _state = LexicState.Final;
                         break;
                 }
             }
