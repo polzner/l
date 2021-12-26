@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -38,11 +39,12 @@ namespace Syntax
                         {
                             result += lex.Value;
                         }
+
                         break;
 
                     case ResultBuilderState.Main:
-                        if (lex.Type == LexType.FunctionWord)
-                        {
+                        if (lex.Type == LexType.FunctionWord && lex.Value != "or" && lex.Value != "xor")
+                        {                           
                             if (lex.Value == "end")
                             {
                                 result += $"\n{lex.Value}";
@@ -50,6 +52,12 @@ namespace Syntax
                             }
 
                             state = ResultBuilderState.Operator;
+                        }
+
+                        if (lex.Value == "or" || lex.Value == "xor")
+                        {
+                            result += $" {lex.Value} ";
+                            break;
                         }
 
                         if (lex.Value == ";")
@@ -64,8 +72,7 @@ namespace Syntax
                     case ResultBuilderState.Operator:
                         if(lex.Value == "xor" || lex.Value == "or")
                         {
-
-                            Paint(richTextBox, lex.Value);
+                            state = ResultBuilderState.Main;
                             break;
                         }
 
@@ -90,29 +97,27 @@ namespace Syntax
 
                 richTextBox.Text += result;
                 result = "";
+                Paint(richTextBox, "xor");
+                Paint(richTextBox, "or");
             }
-        }
-
-        private void PaintWord(RichTextBox richTextBox, string word)
-        {
-            richTextBox.Select(0, 0);
-            richTextBox.Text += word;
-            richTextBox.Select(richTextBox.Text.Length - word.Length, richTextBox.Text.Length);
-
-            richTextBox.SelectionColor = Color.Red;
         }
 
         private void Paint(RichTextBox richTextBox, string word)
         {
-            richTextBox.Text += word;
+            var currentSelStart = richTextBox.SelectionStart;
+            var currentSelLength = richTextBox.SelectionLength;
 
-            if (richTextBox.Find(word) > 0)
+            richTextBox.SelectAll();
+
+            var matches = Regex.Matches(richTextBox.Text, word);
+            foreach (var match in matches.Cast<Match>())
             {
-                int my1stPosition = richTextBox.Find(word);
-                richTextBox.SelectionStart = my1stPosition;
-                richTextBox.SelectionLength = word.Length;
+                richTextBox.Select(match.Index, match.Length);
                 richTextBox.SelectionColor = Color.Red;
             }
+
+            richTextBox.Select(currentSelStart, currentSelLength);
+            richTextBox.SelectionColor = SystemColors.WindowText;
         }
     }
 }
