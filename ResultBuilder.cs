@@ -35,6 +35,30 @@ namespace Syntax
                             currentIdent += ident;
                             result += $"{lex.Value}\n{currentIdent}";
                         }
+                        else if (lex.Value == "program")
+                        {
+                            result += $"{lex.Value} ";
+                        }
+                        else if (lex.Value == ",")
+                        {
+                            result += $"{lex.Value} ";
+                        }
+                        else if (lex.Value == ":=")
+                        {
+                            result += $" {lex.Value} ";
+                        }
+                        else if (lex.Value == "=")
+                        {
+                            result += $" {lex.Value} ";
+                        }
+                        else if (lex.Value == "var")
+                        {
+                            result += $"{lex.Value} ";
+                        }
+                        else if (lex.Value == ":")
+                        {
+                            result += $"{lex.Value} ";
+                        }
                         else
                         {
                             result += lex.Value;
@@ -43,18 +67,19 @@ namespace Syntax
                         break;
 
                     case ResultBuilderState.Main:
-                        if (lex.Type == LexType.FunctionWord && lex.Value != "or" && lex.Value != "xor")
+                        if (lex.Type == LexType.FunctionWord && lex.Value != "or" && lex.Value != "xor" && lex.Value != "and")
                         {                           
                             if (lex.Value == "end")
                             {
-                                result += $"\n{lex.Value}";
+                                richTextBox.Text = richTextBox.Text.Remove(richTextBox.Text.Length - currentIdent.Length, currentIdent.Length);
+                                result += $"{lex.Value}";
                                 break;
                             }
 
                             state = ResultBuilderState.Operator;
                         }
 
-                        if (lex.Value == "or" || lex.Value == "xor")
+                        if (lex.Value == "or" || lex.Value == "xor" || lex.Value == "and")
                         {
                             result += $" {lex.Value} ";
                             break;
@@ -70,7 +95,7 @@ namespace Syntax
                         break;
 
                     case ResultBuilderState.Operator:
-                        if(lex.Value == "xor" || lex.Value == "or")
+                        if(lex.Value == "xor" || lex.Value == "or" || lex.Value == "and")
                         {
                             state = ResultBuilderState.Main;
                             break;
@@ -92,6 +117,7 @@ namespace Syntax
                             currentIdent += ident;
                             result += $"\n{currentIdent}";
                         }
+
                         break;
                 }
 
@@ -99,6 +125,7 @@ namespace Syntax
                 result = "";
                 Paint(richTextBox, "xor");
                 Paint(richTextBox, "or");
+                Paint(richTextBox, "and");
             }
         }
 
