@@ -8,6 +8,7 @@
          Final, 
          Word, 
          Error, 
-         Assign
+         Assign,
+         Comment
      }
 }
